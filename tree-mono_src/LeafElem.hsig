@@ -1,0 +1,5 @@
+signature LeafElem where
+
+data LeafElem
+instance Eq       LeafElem
+instance Show     LeafElem

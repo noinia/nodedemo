@@ -1,0 +1,76 @@
+cabal-version:      2.4
+name:               nodedemo
+version:            0.1.0.0
+author:             Frank Staals
+maintainer:         frank@fstaals.net
+
+----------------------------------------
+-- * Main Library that tries to instantiate the 'tree-mono' library, defining the Node type twice.
+
+library
+  ghc-options: -O -Wall -fno-warn-unticked-promoted-constructors -fno-warn-type-defaults
+  hs-source-dirs: node_src
+  exposed-modules: Thunder.Node
+
+  mixins:  tree-mono (Thunder.Node.Mono as NodeAB) requires (NodeElem as A, LeafElem as B)
+         , tree-mono (Thunder.Node.Mono as NodeCD) requires (NodeElem as C, LeafElem as D)
+
+  build-depends:     tree-mono
+                   , tree-common
+                   , base                    ^>= 4.14.1.0
+
+  default-language:    Haskell2010
+
+----------------------------------------
+-- * Library that defines the Node type, which is suposed to be Parameterized by LeafElem and NodeElem
+
+library tree-mono
+  ghc-options: -O -Wall -fno-warn-unticked-promoted-constructors -fno-warn-type-defaults
+  hs-source-dirs: tree-mono_src
+  exposed-modules: Thunder.Node.Mono
+  signatures: LeafElem
+              NodeElem
+
+  build-depends:     tree-common, base
+  default-language:    Haskell2010
+
+----------------------------------------
+-- * Library with some types that all instances of 'Tree-mono' are supposed to share
+
+library tree-common
+  ghc-options: -O -Wall -fno-warn-unticked-promoted-constructors -fno-warn-type-defaults
+  hs-source-dirs: tree-common_src
+  exposed-modules: Thunder.Tree.Types
+
+  build-depends:
+                     base                    ^>= 4.14.1.0
+  default-language:    Haskell2010
+
+----------------------------------------
+-- * Implementation libraries
+
+
+library int-impl
+  ghc-options: -O -Wall -fno-warn-unticked-promoted-constructors -fno-warn-type-defaults
+  hs-source-dirs: int_impl
+  exposed-modules: NodeElemInt, LeafElemInt, LeafElemChar
+  build-depends:
+                     base                    ^>= 4.14.1.0
+  default-language:    Haskell2010
+
+-- extra-source-files: CHANGELOG.md
+
+----------------------------------------
+-- * Executable
+
+executable nodedemo
+    main-is:          Main.hs
+
+    mixins:
+      nodedemo requires (A as NodeElemInt, B as LeafElemInt, C as NodeElemInt, D as LeafElemChar)
+
+    build-depends:    base ^>=4.14.1.0
+                    , nodedemo
+                    , int-impl
+    hs-source-dirs:   app
+    default-language: Haskell2010

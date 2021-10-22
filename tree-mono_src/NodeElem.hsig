@@ -1,0 +1,5 @@
+signature NodeElem where
+
+data NodeElem
+instance Eq       NodeElem
+instance Show     NodeElem
