@@ -1,0 +1,69 @@
+* Description of the Problem
+
+I'm trying to use backpack to do some limited form of polymorphic
+unpacking (which GHC unfortunately does not support 'natively'). In
+particular, I want something equivalent in functionality to:
+
+#+begin_src :haskell
+data Node a b = Leaf {-# UNPACK #-} !b
+              | Node {-# UNPACK #-} !Index
+                     {-# UNPACK #-} !a
+                     {-# UNPACK #-} !Index
+type Index = Int
+
+bimapNode     :: (a -> c) -> (b -> d) -> Node a b -> Node c d
+bimapNode f g = \case
+  Leaf b     -> Leaf (g b)
+  Node l a r -> Node l (f a) r
+#+end_src
+
+* My Attempt so far
+
+I (think) I somehow managed to implement all ingredients of this using
+backpack, but I'm having trouble figuring out how to combine things
+back together. In particular, what I did is:
+
+1. Define a private library 'tree-mono' that defines:
+   - two Signatures 'NodeElem' (corresponding to type parameter 'a') and 'LeafElem'
+     corresponding to type parameter 'b', and
+   - one module, 'tree-mono_src/Thunder/Node/Mono.hs', that defines
+     the Node data type "parameterized" by 'NodeElem' and 'LeafElem'.
+
+2. Define a private library 'int-impl' that implements the 'NodeElem'
+   and 'LeafElem' signatures. In particular, it has one implementation
+   of the 'NodeElem' signature (just defining 'type NodeElem = Int')
+   and two candidate 'LeafElem' types; Int's and Chars.
+
+3. The 'main' library 'nodedemo' that defines the 'Node' module
+   (node_src/Thunder/Node.hs) that implements the 'bimapNode'
+   function. The interesting part of this library is actually in the
+   mixins defined in the cabal file, in which we essentially import
+   two instances of the 'tree-mono' library, and rename the signatures
+   appropriately. In particular, the 'nodedemo' module is now
+   dependant on four signatures: A, B, C, and D that specify the
+   particular types involved.
+
+So far so good, at least, cabal seems to compile all of this. My main
+issue/question arises when I try to combine this functionality in the
+'nodedemo' executable. I specified the cabal file that I want to
+implement the four signatures of nodedemo using Int's and Char's as
+provided by my 'int-impl' library. I am now able to define some 'Node
+Int Int'.s But I'm not actually sure how I would now simultaneously
+get my hand on the 'Node Int Char' instance (so that I can actually
+apply my bimap function).
+
+* The actual Question
+
+So, the main question is. How would I get my hands on the 'Node Int
+Int' and the 'Node Int Char' data types? I get that they are still
+just called 'Node', and that I should somehow select them by importing
+the right module. I'm not sure how I should achieve this. Only the
+'nodedemo' exectutable seems to know how I instantiated these
+types. Should I now also mixin the 'tree-mono' libraries again to get
+my hand on them? That seemed to create yet another (distinct) copy of
+the 'Node Int Int' type though. Furthermore, that seems to require
+lots of renaming again (which I already did in the 'nodedemo' library
+itself).
+
+Does anyone have some advice on how I to do what I want? And/or ideas
+for doing this somewhat ergonomically?
