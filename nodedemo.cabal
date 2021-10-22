@@ -11,6 +11,7 @@ library
   ghc-options: -O -Wall -fno-warn-unticked-promoted-constructors -fno-warn-type-defaults
   hs-source-dirs: node_src
   exposed-modules: Thunder.Node
+                   -- NodeAB -- does not really work; can't find the module
 
   mixins:  tree-mono (Thunder.Node.Mono as NodeAB) requires (NodeElem as A, LeafElem as B)
          , tree-mono (Thunder.Node.Mono as NodeCD) requires (NodeElem as C, LeafElem as D)
