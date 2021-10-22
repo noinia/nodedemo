@@ -4,7 +4,7 @@ I'm trying to use backpack to do some limited form of polymorphic
 unpacking (which GHC unfortunately does not support 'natively'). In
 particular, I want something equivalent in functionality to:
 
-#+begin_src :haskell
+#+begin_src haskell
 data Node a b = Leaf {-# UNPACK #-} !b
               | Node {-# UNPACK #-} !Index
                      {-# UNPACK #-} !a
