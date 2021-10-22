@@ -1,6 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 module Thunder.Node( bimapNode
                    , NodeAB.Node(..)
+--                   ,  NodeCD.Node(..) -- can't really export this one as well...
                    ) where
 
 import qualified NodeAB
