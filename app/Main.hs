@@ -1,14 +1,14 @@
 module Main where
 
 import Thunder.Node
--- import qualified NodeAB
--- import qualified NodeCD
+import qualified NodeAB
+import qualified NodeCD
 
-myNode :: Node -- NodeAB?
-myNode = Node 1 5 97
+myNode :: NodeAB.Node -- NodeAB?
+myNode = Node 1 97 2
 
---
--- myCDNode = bimapNode id fromEnum myNode
+myCDNode :: NodeCD.Node
+myCDNode = bimapNode toEnum id myNode
 
 main = do print myNode
-          -- print myCDNode
+          print myCDNode

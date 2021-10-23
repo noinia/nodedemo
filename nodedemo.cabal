@@ -13,6 +13,9 @@ library
   exposed-modules: Thunder.Node
                    -- NodeAB -- does not really work; can't find the module
 
+  -- reexported-modules: NodeAB, NodeCD
+  --  -- this does work :)
+
   mixins:  tree-mono (Thunder.Node.Mono as NodeAB) requires (NodeElem as A, LeafElem as B)
          , tree-mono (Thunder.Node.Mono as NodeCD) requires (NodeElem as C, LeafElem as D)
 
@@ -54,7 +57,7 @@ library tree-common
 library int-impl
   ghc-options: -O -Wall -fno-warn-unticked-promoted-constructors -fno-warn-type-defaults
   hs-source-dirs: int_impl
-  exposed-modules: NodeElemInt, LeafElemInt, LeafElemChar
+  exposed-modules: NodeElemInt, LeafElemInt, LeafElemChar, NodeElemChar
   build-depends:
                      base                    ^>= 4.14.1.0
   default-language:    Haskell2010
@@ -68,10 +71,14 @@ executable nodedemo
     main-is:          Main.hs
 
     mixins:
-      nodedemo requires (A as NodeElemInt, B as LeafElemInt, C as NodeElemInt, D as LeafElemChar)
+        nodedemo requires (A as NodeElemInt, B as LeafElemInt, C as NodeElemChar, D as LeafElemInt)
+      , tree-mono (Thunder.Node.Mono as NodeAB) requires (NodeElem as NodeElemInt, LeafElem as LeafElemInt)
+      , tree-mono (Thunder.Node.Mono as NodeCD) requires (NodeElem as NodeElemChar, LeafElem as LeafElemInt)
+
 
     build-depends:    base ^>=4.14.1.0
                     , nodedemo
+                    , tree-mono
                     , int-impl
     hs-source-dirs:   app
     default-language: Haskell2010
